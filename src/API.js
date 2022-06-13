@@ -5,7 +5,7 @@ export default {
     baseUrl: baseUrl,
 
     initRegistration: async () => {
-        const response = await _fetch('/self-service/registration/browser');
+        const response = await _fetch('/self-service/registration/api');
         const r = await response.json();
         return r.ui.action;
     },
@@ -14,6 +14,35 @@ export default {
         const response = await fetch(actionUrl, { method: 'POST', appendBaseUrl: false });
         const r = await response.json();
         return r
+    },
+
+    initLogin: async () => {
+        const response = await _fetch("/self-service/login/api");
+        const r = await response.json();
+        return r.ui.action;
+    },  
+
+    submitLogin: async(actionUrl) => {
+        debugger;
+        const response = await fetch(actionUrl, { 
+            method: 'POST', 
+            appendBaseUrl: false
+        });
+        const r = await response.json()
+        return r;
+    },
+
+    queryEcho: async(sessionToken) => {
+        const response = await _fetch("https://echo.api.dev.mindtastic.lol/", {
+            appendBaseUrl: false,
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${sessionToken}`,
+            },
+            body: `Hello`,
+        })
+
+        return response.text();
     }
 
 };

@@ -4,10 +4,11 @@ import API from "./API";
 export default function Registration() {
   
   const [pending, setPending] = useState(false);
+  const [accountKey, setAccountKey] = useState("");
   const [preLines, dispatch] = useReducer(lineReducer, []);
   
   const register = async() => {
-    dispatch(resetLineAction());
+    reset();
     setPending(true);
     dispatch(addLineAction("Initiating registration..."));
     
@@ -18,13 +19,26 @@ export default function Registration() {
       dispatch(addLineAction(`Got flowID: ${actionUrl.searchParams.get("flow")}`));
 
       dispatch(addLineAction("Submitting registration with flowId..."));
-      const registrationResult = await API.submitRegistration(actionUrl);
-      debugger;
+      const registration = await API.submitRegistration(actionUrl);
+
+      dispatch(addLineAction("Received registration response:"));
+      dispatch(addLineAction(`AccountKey: ${registration.identity.traits.accountKey}`))
+
+      const session = registration.session
+      if (session) {
+        dispatch(addLineAction("Auto-Login succeeded"));
+        dispatch(addLineAction(`SessionToken: ${registration.session_token} (expiring: ${session.expires_at})`))
+      }
 
     } catch (e) {
       dispatch(addLineAction(e.toString()));
     }
     setPending(false);
+  };
+
+  const reset = () => {
+    dispatch(resetLineAction());
+    setAccountKey("");
   };
 
   return (
@@ -34,6 +48,7 @@ export default function Registration() {
       <pre>
         {preLines.map(s => s + "\n")}
       </pre>
+      <p style={{fontWeight: 'bold'}}></p>
     </section>
   );
 };
