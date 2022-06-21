@@ -1,18 +1,7 @@
 import React, { useState } from "react";
 import { Container, Navbar, Form } from "react-bootstrap";
 
-const SettingsHeader = () => {
-    const [cluster, setCluster] = useState("live");
-    const [flow, setFlow] = useState("browser");
-
-    const clusterChange = (event) => {
-        setCluster(event.target.value);
-    }
-
-    const flowChange = (event) => {
-        setFlow(event.target.value);
-    }
-
+const SettingsHeader = (props) => {
     return (
         <Navbar bg="light">
             <Container>
@@ -23,7 +12,7 @@ const SettingsHeader = () => {
                             <Form.Label>
                                 Cluster
                             </Form.Label>
-                            <Form.Select value={cluster} onChange={clusterChange}>
+                            <Form.Select value={props.clusterState} onChange={(event) => props.clusterHandler(event)}>
                                 <option value="dev">DEV</option>
                                 <option value="stage">STAGE</option>
                                 <option value="live">LIVE</option>
@@ -33,7 +22,7 @@ const SettingsHeader = () => {
                             <Form.Label>
                                 Flow
                             </Form.Label>
-                            <Form.Select value={flow} onChange={flowChange}>
+                            <Form.Select value={props.flowState} onChange={(event) => props.flowHandler(event)}>
                                 <option value="browser">Browser</option>
                                 <option value="api">API</option>
                             </Form.Select>
