@@ -22,10 +22,12 @@ const TestPage = (props) => {
 
     const initRegistration = () => {
         let url = "https://auth.api." + props.cluster + ".mindtastic.lol/self-service/registration/" + props.flow;
-        console.log(url);
-        console.log(req);
+
         dispatchReq(addLineAction("URL: " + url));
-        console.log(req);
+        dispatchReq(addLineAction("Method: GET"));
+
+        fetch("/foo").then((res) => console.log(res));
+        fetch("/dev/self-service/registration/" + props.flow).then((res) => console.log(res));
 
     }
 
