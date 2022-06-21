@@ -3,7 +3,6 @@ import { defineConfig } from 'vite'
 export default defineConfig({
     server: {
         proxy: {
-            '/foo': 'http://localhost:8000',
             '/dev': {
                 target: 'https://auth.api.dev.mindtastic.lol',
                 changeOrigin: true,

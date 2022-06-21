@@ -14,7 +14,9 @@ const DisplayRequest = (props) => {
         <div>
             <p>Request:</p>
             <div style={style}>
-                {props.text}
+                {(Object.keys(props.request)).map((key, index) =>
+                    <p><span style={{ fontWeight: "700" }}>{key}: </span>{(typeof props.request[key] === "object" ? JSON.stringify(props.request[key]) : props.request[key])}</p>
+                )}
             </div>
         </div>
     );

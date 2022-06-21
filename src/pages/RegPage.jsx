@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import DisplayRequest from "../views/DisplayRequest";
 import DisplayResponse from "../views/DisplayResponse";
 import { Container, Row, Col } from "react-bootstrap";
@@ -20,14 +20,37 @@ const TestPage = (props) => {
     };
     const [req, dispatchReq] = useReducer(lineReducer, []);
 
+    const [request, setRequest] = useState({
+        url: "",
+        method: "",
+        headers: {}
+    });
+
     const initRegistration = () => {
         let url = "https://auth.api." + props.cluster + ".mindtastic.lol/self-service/registration/" + props.flow;
+        let proxyURL = "/" + props.cluster + "/self-service/registration/" + props.flow;
 
-        dispatchReq(addLineAction("URL: " + url));
+        let method = "GET";
+        let headers = {
+            Accept: "application/json"
+        }
+
+        /*
+        dispatchReq(addLineAction("URL: " + proxyURL));
         dispatchReq(addLineAction("Method: GET"));
+        dispatchReq(addLineAction("Headers:"));
+        dispatchReq(addLineAction("Accept: application/json"));
+        */
 
-        fetch("/foo").then((res) => console.log(res));
-        fetch("/dev/self-service/registration/" + props.flow).then((res) => console.log(res));
+        setRequest({ url, method, headers });
+
+        fetch(proxyURL, {
+            headers
+        })
+            .then((res) => res.json())
+            .then((res) => {
+
+            });
 
     }
 
@@ -35,10 +58,10 @@ const TestPage = (props) => {
         <Container>
             <Row>
                 <Col md={{ span: 4 }}>
-                    <Registration initHandler={initRegistration}></Registration>
+                    <Registration initHandler={() => initRegistration()}></Registration>
                 </Col>
                 <Col md={{ span: 8 }}>
-                    <DisplayRequest text={req}></DisplayRequest>
+                    <DisplayRequest request={request}></DisplayRequest>
                     <DisplayResponse></DisplayResponse>
                 </Col>
             </Row>
