@@ -3,7 +3,8 @@ const proxyUrl = "/%CLUSTER%";
 const endpoints = {
     regInit: "/self-service/registration/%FLOW%",
     regSubmit: "/self-service/registration?flow=%FLOWID%",
-    loginInit: "/self-service/login/%FLOW%"
+    loginInit: "/self-service/login/%FLOW%",
+    loginSubmit: "/self-service/login?flow=%FLOWID%"
 }
 
 export default {

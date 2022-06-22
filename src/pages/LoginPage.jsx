@@ -2,12 +2,12 @@ import React, { useReducer, useState } from "react";
 import DisplayRequest from "../views/DisplayRequest";
 import FlowData from "../views/FlowData";
 import API, { getFormattedURL, getFormattedProxyURL } from "../API";
-import RegistrationProvider from "../util/RegistrationProvider";
+import LoginProvider from "../util/LoginProvider";
 import { Container, Row, Col } from "react-bootstrap";
-import Registration from "../views/Registration";
+import Login from "../views/Login";
 import axios from "axios";
 
-const RegPage = (props) => {
+const LoginPage = (props) => {
     const reset = () => {
         setRequest({});
         setResponse({});
@@ -30,11 +30,11 @@ const RegPage = (props) => {
     const [accountKey, setAccountKey] = useState("");
     const [sessionID, setSessionID] = useState("");
 
-    const initRegistration = async () => {
+    const initLogin = async () => {
         reset();
 
-        let registration = new RegistrationProvider(props.cluster, props.flow);
-        let newRequest = registration.getInitRequest();
+        let login = new LoginProvider(props.cluster, props.flow);
+        let newRequest = login.getInitRequest();
 
         setRequest(newRequest);
 
@@ -44,17 +44,17 @@ const RegPage = (props) => {
         setCSRF(jsonRes.json.ui.nodes.filter(x => x.attributes.name == "csrf_token").map(x => x.attributes.value)[0]);
     }
 
-    const submitRegistration = async () => {
+    const submitLogin = async () => {
         resetPrint();
 
-        let registration = new RegistrationProvider(props.cluster, props.flow);
-        let newRequest = registration.getSubmitRequest(flowID, csrf);
+        let login = new LoginProvider(props.cluster, props.flow);
+        let newRequest = login.getSubmitRequest(flowID, csrf);
 
         setRequest(newRequest);
 
         console.log(newRequest);
 
-        var jsonRes = await API.makeRequest(registration.stringifyBody(newRequest));
+        var jsonRes = await API.makeRequest(login.stringifyBody(newRequest));
         setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
         setAccountKey(jsonRes.json.identity.traits.accountKey);
         setSessionID(jsonRes.json.session.id);
@@ -85,7 +85,7 @@ const RegPage = (props) => {
         <Container>
             <Row>
                 <Col md={{ span: 4 }}>
-                    <Registration submit={Boolean(flowID) && Boolean(csrf)} initHandler={() => initRegistration()} submitHandler={() => submitRegistration()}></Registration>
+                    <Login submit={Boolean(flowID) && Boolean(csrf)}></Login>
                     <FlowData data={formatFlowData()}></FlowData>
                 </Col>
                 <Col md={{ span: 8 }}>
@@ -97,4 +97,4 @@ const RegPage = (props) => {
     );
 }
 
-export default RegPage;
+export default LoginPage;
