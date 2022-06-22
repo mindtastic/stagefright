@@ -12,11 +12,17 @@ const DisplayRequest = (props) => {
 
     return (
         <div>
-            <p>Request:</p>
+            <p className="mb-0 mt-2">{props.title}:</p>
             <div style={style}>
-                {(Object.keys(props.request)).map((key, index) =>
-                    <p><span style={{ fontWeight: "700" }}>{key}: </span>{(typeof props.request[key] === "object" ? JSON.stringify(props.request[key]) : props.request[key])}</p>
-                )}
+                {(Object.keys(props.text)).map((key, index) => (
+                    <div>
+                        <span style={{ fontWeight: "700" }}>{key}: </span>
+
+                        <pre>
+                            {(typeof props.text[key] === "object" ? JSON.stringify(props.text[key], null, 4) : props.text[key])}
+                        </pre>
+                    </div>
+                ))}
             </div>
         </div>
     );

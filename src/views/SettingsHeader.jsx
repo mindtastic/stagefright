@@ -24,7 +24,7 @@ const SettingsHeader = (props) => {
                             </Form.Label>
                             <Form.Select value={props.flowState} onChange={(event) => props.flowHandler(event)}>
                                 <option value="browser">Browser</option>
-                                <option value="api">API</option>
+                                <option value="api" disabled>API</option>
                             </Form.Select>
                         </Form.Group>
                     </Form>
