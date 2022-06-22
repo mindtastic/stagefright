@@ -1,6 +1,8 @@
 import React, { useReducer, useState } from "react";
 import DisplayRequest from "../views/DisplayRequest";
 import FlowData from "../views/FlowData";
+import API, { getFormattedURL, getFormattedProxyURL } from "../API";
+import RegistrationProvider from "../util/RegistrationProvider";
 import { Container, Row, Col } from "react-bootstrap";
 import Registration from "../views/Registration";
 import axios from "axios";
@@ -11,6 +13,12 @@ const TestPage = (props) => {
         setResponse({});
         setCSRF("");
         setFlowID("");
+        setSessionID("");
+    }
+
+    const resetPrint = () => {
+        setRequest({});
+        setResponse({});
     }
 
     const [request, setRequest] = useState({});
@@ -20,68 +28,36 @@ const TestPage = (props) => {
     const [flowID, setFlowID] = useState("");
     const [csrf, setCSRF] = useState("");
     const [accountKey, setAccountKey] = useState("");
+    const [sessionID, setSessionID] = useState("");
 
-    const initRegistration = () => {
+    const initRegistration = async () => {
         reset();
 
-        let url = "https://auth.api." + props.cluster + ".mindtastic.lol/self-service/registration/" + props.flow;
-        let proxyURL = "/" + props.cluster + "/self-service/registration/" + props.flow;
+        let registration = new RegistrationProvider(props.cluster, props.flow);
+        let newRequest = registration.getInitRequest();
 
-        let requestParams = {
-            url,
-            method: "GET",
-            headers: {
-                Accept: "application/json"
-            }
-        }
+        setRequest(newRequest);
 
-        setRequest(requestParams);
-
-        fetch(proxyURL, requestParams)
-            .then(res => res.json().then(json => ({
-                headers: res.headers,
-                status: res.status,
-                json
-            }))
-                .then((json) => {
-                    setResponse({ ...response, headers: json.headers, status: json.status, body: json.json });
-                    setFlowID(json.json.id);
-                    setCSRF(json.json.ui.nodes.filter(x => x.attributes.name == "csrf_token").map(x => x.attributes.value)[0]);
-                }));
+        var jsonRes = await API.makeRequest(newRequest);
+        setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
+        setFlowID(jsonRes.json.id);
+        setCSRF(jsonRes.json.ui.nodes.filter(x => x.attributes.name == "csrf_token").map(x => x.attributes.value)[0]);
     }
 
-    const submitRegistration = () => {
-        let url = "https://auth.api." + props.cluster + ".mindtastic.lol/self-service/registration?flow=" + flowID;
-        let proxyURL = "/" + props.cluster + "/self-service/registration?flow=" + flowID;
+    const submitRegistration = async () => {
+        resetPrint();
 
-        let requestParams = {
-            url,
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-            },
-            body: {
-                method: "password"
-            }
-        }
+        let registration = new RegistrationProvider(props.cluster, props.flow);
+        let newRequest = registration.getSubmitRequest(flowID, csrf);
 
-        if (props.flow == "browser") requestParams.body.csrf_token = csrf;
+        setRequest(newRequest);
 
-        setRequest(requestParams);
+        console.log(newRequest);
 
-        console.log(requestParams);
-
-        fetch(proxyURL, { ...requestParams, body: JSON.stringify(requestParams.body) })
-            .then(res => res.json().then(json => ({
-                headers: res.headers,
-                status: res.status,
-                json
-            }))
-                .then((json) => {
-                    setResponse({ ...response, headers: json.headers, status: json.status, body: json.json });
-                    setAccountKey(json.json.identity.traits.accountKey);
-                }));
+        var jsonRes = await API.makeRequest(registration.stringifyBody(newRequest));
+        setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
+        setAccountKey(jsonRes.json.identity.traits.accountKey);
+        setSessionID(jsonRes.json.session.id);
     }
 
     const formatFlowData = () => {
@@ -97,6 +73,10 @@ const TestPage = (props) => {
             {
                 name: "AccountKey",
                 value: accountKey
+            },
+            {
+                name: "Session ID",
+                value: sessionID
             }
         ]
     }
