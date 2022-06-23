@@ -1,7 +1,7 @@
-import React, { useReducer, useState } from "react";
+import React, { useState } from "react";
 import DisplayRequest from "../views/DisplayRequest";
 import FlowData from "../views/FlowData";
-import API, { getFormattedURL, getFormattedProxyURL } from "../API";
+import API from "../API";
 import LoginProvider from "../util/LoginProvider";
 import { Container, Row, Col } from "react-bootstrap";
 import Login from "../views/Login";

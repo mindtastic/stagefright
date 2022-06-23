@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import API from "./API";
-import Echo from "./Echo";
-import Registration from "./Registration";
 import Hub from "./pages/Hub";
 import RegPage from "./pages/RegPage";
 import LoginPage from "./pages/LoginPage";

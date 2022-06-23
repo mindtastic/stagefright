@@ -8,7 +8,7 @@ const endpoints = {
     logoutInit: "/self-service/logout/%FLOW%",
     logoutSubmit: "/self-service/logout?token=%LOGOUTTOKEN%",
     whoami: "/sessions/whoami"
-}
+};
 
 export default {
 
@@ -16,21 +16,24 @@ export default {
     baseUrl: baseUrl,
 
     makeRequest: async (request) => {
-        var response = await fetch(request.proxyUrl, request);
+      let json = {};
 
-        response = await response.json()
-            .then(json => ({
-                headers: response.headers,
-                status: response.status,
-                json
-            }))
-            .catch((err) => console.log(err));
+      try {
+          const response = await fetch(request.proxyUrl, request);
+          json = await response.json();
+      } catch (err) {
+        console.err(err);
+      }
 
-        return response;
+      return {
+          headers: response.headers,
+          status: response.status,
+          json,
+        };
     },
 
     makeRequestNoJSON: async (request) => {
-        var response = await fetch(request.proxyUrl, request);
+        const response = await fetch(request.proxyUrl, request);
 
         return {
             status: response.status,
@@ -89,11 +92,7 @@ async function _fetch(path, options = {}) {
 };
 
 function formatURL(url, replacements) {
-    let str = url.replace(/%\w+%/g, function (all) {
-        return replacements[all] || all;
-    });
-
-    return str;
+    return url.replace(/%\w+%/g, (match) => replacements[match] || match);
 }
 
 function getFormattedURL(replacements, endpoint) {
