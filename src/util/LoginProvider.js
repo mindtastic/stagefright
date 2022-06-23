@@ -1,4 +1,5 @@
 import API, { getFormattedProxyURL, getFormattedURL } from "../API";
+import md5 from "md5";
 
 class LoginProvider {
     constructor(cluster, flowType) {
@@ -35,10 +36,13 @@ class LoginProvider {
         return this.initRequest;
     }
 
-    getSubmitRequest(flowID, csrf) {
+    getSubmitRequest(flowID, accountKey, csrf) {
         if (this.flowType == "browser") {
             this.submitRequest.body.csrf_token = csrf;
         }
+
+        this.submitRequest.body.identifier = accountKey;
+        this.submitRequest.body.password = md5(accountKey);
 
         this.submitRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, API.endpoints.loginSubmit);
         this.submitRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, API.endpoints.loginSubmit);

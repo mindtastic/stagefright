@@ -5,7 +5,6 @@ import API, { getFormattedURL, getFormattedProxyURL } from "../API";
 import LoginProvider from "../util/LoginProvider";
 import { Container, Row, Col } from "react-bootstrap";
 import Login from "../views/Login";
-import axios from "axios";
 
 const LoginPage = (props) => {
     const reset = () => {
@@ -48,16 +47,17 @@ const LoginPage = (props) => {
         resetPrint();
 
         let login = new LoginProvider(props.cluster, props.flow);
-        let newRequest = login.getSubmitRequest(flowID, csrf);
+        let newRequest = login.getSubmitRequest(flowID, accountKey, csrf);
 
         setRequest(newRequest);
 
-        console.log(newRequest);
-
         var jsonRes = await API.makeRequest(login.stringifyBody(newRequest));
         setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
-        setAccountKey(jsonRes.json.identity.traits.accountKey);
         setSessionID(jsonRes.json.session.id);
+    }
+
+    const changeAccountKey = (event) => {
+        setAccountKey(event.target.value);
     }
 
     const formatFlowData = () => {
@@ -71,10 +71,6 @@ const LoginPage = (props) => {
                 value: csrf
             },
             {
-                name: "AccountKey",
-                value: accountKey
-            },
-            {
                 name: "Session ID",
                 value: sessionID
             }
@@ -85,7 +81,7 @@ const LoginPage = (props) => {
         <Container>
             <Row>
                 <Col md={{ span: 4 }}>
-                    <Login submit={Boolean(flowID) && Boolean(csrf)}></Login>
+                    <Login initHandler={initLogin} submitHandler={submitLogin} accountKey={accountKey} accountKeyHandler={changeAccountKey} submit={Boolean(flowID) && Boolean(csrf)}></Login>
                     <FlowData data={formatFlowData()}></FlowData>
                 </Col>
                 <Col md={{ span: 8 }}>

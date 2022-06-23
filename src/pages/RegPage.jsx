@@ -5,7 +5,6 @@ import API, { getFormattedURL, getFormattedProxyURL } from "../API";
 import RegistrationProvider from "../util/RegistrationProvider";
 import { Container, Row, Col } from "react-bootstrap";
 import Registration from "../views/Registration";
-import axios from "axios";
 
 const RegPage = (props) => {
     const reset = () => {

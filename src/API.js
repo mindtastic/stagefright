@@ -90,6 +90,8 @@ function getFormattedURL(replacements, endpoint) {
             return formatURL(baseUrl + endpoints.regSubmit, replacements);
         case endpoints.loginInit:
             return formatURL(baseUrl + endpoints.loginInit, replacements);
+        case endpoints.loginSubmit:
+            return formatURL(baseUrl + endpoints.loginSubmit, replacements);
         default:
             return "";
     }
@@ -103,6 +105,8 @@ function getFormattedProxyURL(replacements, endpoint) {
             return formatURL(proxyUrl + endpoints.regSubmit, replacements);
         case endpoints.loginInit:
             return formatURL(proxyUrl + endpoints.loginInit, replacements);
+        case endpoints.loginSubmit:
+            return formatURL(proxyUrl + endpoints.loginSubmit, replacements);
         default:
             return "";
     }

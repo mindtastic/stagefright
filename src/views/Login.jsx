@@ -8,28 +8,22 @@ const Login = (props) => {
 
     const divider = {
         width: "100%",
-        height: "2px",
-        backgroundColor: "#1d1d1d"
-    }
-
-    const [userID, setUserID] = useState("");
-
-    const userIDChange = (event) => {
-        setUserID(event.target.value);
+        height: "1px",
+        backgroundColor: "#d1d1d1"
     }
 
     return (
         <div className="my-4 d-flex flex-column">
-            <Button>
+            <Button onClick={() => props.initHandler()}>
                 Initialize Login
             </Button>
             <div style={divider} className="my-4"></div>
             <Form>
                 <Form.Group>
-                    <Form.Control type="text" placeholder="User ID" value={userID} onChange={userIDChange} disabled={!props.submit}></Form.Control>
+                    <Form.Control type="text" placeholder="AccountKey" value={props.accountKey} onChange={(event) => props.accountKeyHandler(event)} disabled={!props.submit}></Form.Control>
                 </Form.Group>
             </Form>
-            <Button className="mt-2" disabled={!props.submit}>
+            <Button className="mt-2" onClick={() => props.submitHandler()} disabled={!props.submit}>
                 Submit Login
             </Button>
         </div>
