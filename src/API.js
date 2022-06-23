@@ -4,7 +4,9 @@ const endpoints = {
     regInit: "/self-service/registration/%FLOW%",
     regSubmit: "/self-service/registration?flow=%FLOWID%",
     loginInit: "/self-service/login/%FLOW%",
-    loginSubmit: "/self-service/login?flow=%FLOWID%"
+    loginSubmit: "/self-service/login?flow=%FLOWID%",
+    logoutInit: "/self-service/logout/%FLOW%",
+    logoutSubmit: "/self-service/logout?token=%LOGOUTTOKEN%"
 }
 
 export default {
@@ -15,13 +17,24 @@ export default {
     makeRequest: async (request) => {
         var response = await fetch(request.proxyUrl, request);
 
-        response = await response.json().then(json => ({
-            headers: response.headers,
-            status: response.status,
-            json
-        }));
+        response = await response.json()
+            .then(json => ({
+                headers: response.headers,
+                status: response.status,
+                json
+            }))
+            .catch((err) => console.log(err));
 
         return response;
+    },
+
+    makeRequestNoJSON: async (request) => {
+        var response = await fetch(request.proxyUrl, request);
+
+        return {
+            status: response.status,
+            statusText: response.statusText
+        };
     },
 
     initLogin: async () => {
@@ -92,6 +105,10 @@ function getFormattedURL(replacements, endpoint) {
             return formatURL(baseUrl + endpoints.loginInit, replacements);
         case endpoints.loginSubmit:
             return formatURL(baseUrl + endpoints.loginSubmit, replacements);
+        case endpoints.logoutInit:
+            return formatURL(baseUrl + endpoints.logoutInit, replacements);
+        case endpoints.logoutSubmit:
+            return formatURL(baseUrl + endpoints.logoutSubmit, replacements);
         default:
             return "";
     }
@@ -107,6 +124,10 @@ function getFormattedProxyURL(replacements, endpoint) {
             return formatURL(proxyUrl + endpoints.loginInit, replacements);
         case endpoints.loginSubmit:
             return formatURL(proxyUrl + endpoints.loginSubmit, replacements);
+        case endpoints.logoutInit:
+            return formatURL(proxyUrl + endpoints.logoutInit, replacements);
+        case endpoints.logoutSubmit:
+            return formatURL(proxyUrl + endpoints.logoutSubmit, replacements);
         default:
             return "";
     }

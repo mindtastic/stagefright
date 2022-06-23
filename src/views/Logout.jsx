@@ -1,4 +1,4 @@
-import { Button, Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import React from "react";
 
 const Login = (props) => {
@@ -15,16 +15,10 @@ const Login = (props) => {
     return (
         <div className="my-4 d-flex flex-column">
             <Button onClick={() => props.initHandler()}>
-                Initialize Login
+                Initialize Logout
             </Button>
-            <div style={divider} className="my-4"></div>
-            <Form>
-                <Form.Group>
-                    <Form.Control type="text" placeholder="AccountKey" value={props.accountKey} onChange={(event) => props.accountKeyHandler(event)} disabled={!props.submit}></Form.Control>
-                </Form.Group>
-            </Form>
             <Button className="mt-2" onClick={() => props.submitHandler()} disabled={!props.submit}>
-                Submit Login
+                Submit Logout
             </Button>
         </div>
     );

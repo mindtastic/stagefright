@@ -5,6 +5,7 @@ import API, { getFormattedURL, getFormattedProxyURL } from "../API";
 import LoginProvider from "../util/LoginProvider";
 import { Container, Row, Col } from "react-bootstrap";
 import Login from "../views/Login";
+import LogoutProvider from "../util/LogoutProvider";
 
 const LoginPage = (props) => {
     const reset = () => {
