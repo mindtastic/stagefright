@@ -30,8 +30,8 @@ class LoginProvider {
     }
 
     checkSessionRequest = {
-        url: getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.whoami),
-        proxyUrl: getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.whoami),
+        url: API.baseUrl + API.endpoints.whoami,
+        proxyUrl: API.proxyUrl + API.endpoints.whoami,
         method: "GET",
         headers: {
             Accept: "application/json",
@@ -40,8 +40,8 @@ class LoginProvider {
     }
 
     getInitRequest() {
-        this.initRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.loginInit);
-        this.initRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.loginInit);
+        this.initRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, "loginInit");
+        this.initRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, "loginInit");
 
         return this.initRequest;
     }
@@ -54,15 +54,15 @@ class LoginProvider {
         this.submitRequest.body.identifier = accountKey;
         this.submitRequest.body.password = md5(accountKey);
 
-        this.submitRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, API.endpoints.loginSubmit);
-        this.submitRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, API.endpoints.loginSubmit);
+        this.submitRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, "loginSubmit");
+        this.submitRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, "loginSubmit");
 
         return this.submitRequest;
     }
 
     getSessionRequest() {
-        this.checkSessionRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.whoami);
-        this.checkSessionRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.whoami);
+        this.checkSessionRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, "whoami");
+        this.checkSessionRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, "whoami");
 
         return this.checkSessionRequest;
     }

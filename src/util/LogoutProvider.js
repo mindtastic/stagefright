@@ -7,8 +7,8 @@ class LogoutProvider {
     }
 
     initRequest = {
-        url: getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.logoutInit),
-        proxyUrl: getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.logoutInit),
+        url: API.baseUrl + API.endpoints.logoutInit,
+        proxyUrl: API.proxyUrl + API.endpoints.logoutInit,
         method: "",
         headers: {
             Accept: "application/json"
@@ -26,8 +26,8 @@ class LogoutProvider {
     }
 
     getInitRequest() {
-        this.initRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.logoutInit);
-        this.initRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.logoutInit);
+        this.initRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, "logoutInit");
+        this.initRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, "logoutInit");
 
         if (this.flowType == "browser") {
             this.initRequest.method = "GET"
@@ -39,8 +39,8 @@ class LogoutProvider {
     }
 
     getSubmitRequest(logoutToken) {
-        this.submitRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%LOGOUTTOKEN%": logoutToken }, API.endpoints.logoutSubmit);
-        this.submitRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%LOGOUTTOKEN%": logoutToken }, API.endpoints.logoutSubmit);
+        this.submitRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%LOGOUTTOKEN%": logoutToken }, "logoutSubmit");
+        this.submitRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%LOGOUTTOKEN%": logoutToken }, "logoutSubmit");
 
         return this.submitRequest;
     }

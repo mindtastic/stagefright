@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-const Hub = (props) => {
+const Hub = ({ activeSession }) => {
     const modes = [
         {
             name: "Registration",
@@ -21,18 +21,14 @@ const Hub = (props) => {
         }
     ]
 
-    useEffect(() => {
-        props.sessionHandler();
-    });
-
     return (
         <Container fluid="lg">
             <Row>
                 <Col md={{ span: 6, offset: 3 }} className="d-flex align-items-center flex-column">
                     <h1 className="my-4">Mindtastic Stagefright&trade;</h1>
                     {modes.map((item, index) =>
-                        <Link to={item.path} className={"my-4 " + ((item.requiresSession ? !props.session : props.session) ? "disabled-link" : "")} style={{ width: "80%" }} key={index}>
-                            <Button style={{ width: "100%" }} disabled={item.requiresSession ? !props.session : props.session}>
+                        <Link to={item.path} className={"my-4 " + ((item.requiresSession ? !activeSession : activeSession) ? "disabled-link" : "")} style={{ width: "80%" }} key={index}>
+                            <Button style={{ width: "100%" }} disabled={item.requiresSession ? !activeSession : activeSession}>
                                 {item.name}
                             </Button>
                         </Link>

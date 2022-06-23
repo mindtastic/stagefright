@@ -16,19 +16,23 @@ export default {
     baseUrl: baseUrl,
 
     makeRequest: async (request) => {
-      let json = {};
+        let json = {};
+        let response = {};
 
-      try {
-          const response = await fetch(request.proxyUrl, request);
-          json = await response.json();
-      } catch (err) {
-        console.err(err);
-      }
+        try {
+            response = await fetch(request.proxyUrl, request);
+            json = await response.json();
+        } catch (err) {
+            console.log(err);
+        }
 
-      return {
-          headers: response.headers,
-          status: response.status,
-          json,
+        console.log(response);
+        console.log(json);
+
+        return {
+            headers: response.headers,
+            status: response.status,
+            json,
         };
     },
 
@@ -95,46 +99,12 @@ function formatURL(url, replacements) {
     return url.replace(/%\w+%/g, (match) => replacements[match] || match);
 }
 
-function getFormattedURL(replacements, endpoint) {
-    switch (endpoint) {
-        case endpoints.regInit:
-            return formatURL(baseUrl + endpoints.regInit, replacements);
-        case endpoints.regSubmit:
-            return formatURL(baseUrl + endpoints.regSubmit, replacements);
-        case endpoints.loginInit:
-            return formatURL(baseUrl + endpoints.loginInit, replacements);
-        case endpoints.loginSubmit:
-            return formatURL(baseUrl + endpoints.loginSubmit, replacements);
-        case endpoints.logoutInit:
-            return formatURL(baseUrl + endpoints.logoutInit, replacements);
-        case endpoints.logoutSubmit:
-            return formatURL(baseUrl + endpoints.logoutSubmit, replacements);
-        case endpoints.whoami:
-            return formatURL(baseUrl + endpoints.whoami, replacements);
-        default:
-            return "";
+export function getFormattedURL(replacements, endpoint, base = baseUrl) {
+    if (!endpoints.hasOwnProperty(endpoint)) {
+        return "";
     }
+    return formatURL(base + endpoints[endpoint], replacements);
 }
-
-function getFormattedProxyURL(replacements, endpoint) {
-    switch (endpoint) {
-        case endpoints.regInit:
-            return formatURL(proxyUrl + endpoints.regInit, replacements);
-        case endpoints.regSubmit:
-            return formatURL(proxyUrl + endpoints.regSubmit, replacements);
-        case endpoints.loginInit:
-            return formatURL(proxyUrl + endpoints.loginInit, replacements);
-        case endpoints.loginSubmit:
-            return formatURL(proxyUrl + endpoints.loginSubmit, replacements);
-        case endpoints.logoutInit:
-            return formatURL(proxyUrl + endpoints.logoutInit, replacements);
-        case endpoints.logoutSubmit:
-            return formatURL(proxyUrl + endpoints.logoutSubmit, replacements);
-        case endpoints.whoami:
-            return formatURL(proxyUrl + endpoints.whoami, replacements);
-        default:
-            return "";
-    }
+export function getFormattedProxyURL(replacements, endpoint) {
+    return getFormattedURL(replacements, endpoint, proxyUrl);
 }
-
-export { getFormattedURL, getFormattedProxyURL };

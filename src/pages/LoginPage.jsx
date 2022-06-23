@@ -8,74 +8,82 @@ import Login from "../views/Login";
 import LogoutProvider from "../util/LogoutProvider";
 
 const LoginPage = (props) => {
-    const reset = () => {
-        setRequest({});
-        setResponse({});
-        setCSRF("");
-        setFlowID("");
-        setSessionID("");
-    }
+    const initialState = {
+        flowID: "",
+        csrf: "",
+        accountKey: "",
+        sessionID: "",
+        request: {},
+        response: {},
+    };
 
-    const resetPrint = () => {
-        setRequest({});
-        setResponse({});
-    }
+    const [state, setState] = useState(initialState);
+    const updateState = (changes) => setState({ ...state, ...changes });
 
-    const [request, setRequest] = useState({});
+    const reset = () => updateState(initialState);
+    const resetPrint = () => updateState({ request: {}, response: {} });
 
-    const [response, setResponse] = useState({});
-
-    const [flowID, setFlowID] = useState("");
-    const [csrf, setCSRF] = useState("");
-    const [accountKey, setAccountKey] = useState("");
-    const [sessionID, setSessionID] = useState("");
+    const login = new LoginProvider(props.cluster, props.flow);
 
     const initLogin = async () => {
         reset();
 
-        let login = new LoginProvider(props.cluster, props.flow);
-        let newRequest = login.getInitRequest();
+        let request = login.getInitRequest();
 
-        setRequest(newRequest);
+        updateState({ request });
 
-        var jsonRes = await API.makeRequest(newRequest);
-        setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
-        setFlowID(jsonRes.json.id);
-        setCSRF(jsonRes.json.ui.nodes.filter(x => x.attributes.name == "csrf_token").map(x => x.attributes.value)[0]);
+        let response = await API.makeRequest(request);
+        let flowID = "";
+        let csrf = "";
+
+        try {
+            flowID = response.json.id;
+            csrf = response.json.ui.nodes.filter(x => x.attributes.name == "csrf_token").map(x => x.attributes.value)[0];
+        } catch (err) {
+            console.log(err);
+        }
+
+        updateState({ request, response, flowID, csrf });
     }
 
     const submitLogin = async () => {
         resetPrint();
 
-        let login = new LoginProvider(props.cluster, props.flow);
-        let newRequest = login.getSubmitRequest(flowID, accountKey, csrf);
+        let request = login.getSubmitRequest(state.flowID, state.accountKey, state.csrf);
 
-        setRequest(newRequest);
+        updateState({ request });
 
-        var jsonRes = await API.makeRequest(login.stringifyBody(newRequest));
-        setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
-        setSessionID(jsonRes.json.session.id);
+        let response = await API.makeRequest(login.stringifyBody(request));
+        let sessionID = "";
 
-        props.sessionHandler();
+        try {
+            sessionID = response.json.session.id;
+        } catch (err) {
+            console.log(err);
+        }
+
+        updateState({ request, response, sessionID });
+
+        props.checkForActiveSessionCallback();
     }
 
     const changeAccountKey = (event) => {
-        setAccountKey(event.target.value);
+        updateState({ accountKey: event.target.value });
     }
 
     const formatFlowData = () => {
         return [
             {
                 name: "Flow ID",
-                value: flowID
+                value: state.flowID
             },
             {
                 name: "CSRF Token",
-                value: csrf
+                value: state.csrf
             },
             {
                 name: "Session ID",
-                value: sessionID
+                value: state.sessionID
             }
         ]
     }
@@ -87,15 +95,15 @@ const LoginPage = (props) => {
                     <Login
                         initHandler={initLogin}
                         submitHandler={submitLogin}
-                        accountKey={accountKey}
+                        accountKey={state.accountKey}
                         accountKeyHandler={changeAccountKey}
-                        form={Boolean(flowID) && Boolean(csrf)}
-                        submit={Boolean(flowID) && Boolean(csrf) && Boolean(accountKey)}></Login>
-                    <FlowData data={formatFlowData()}></FlowData>
+                        form={Boolean(state.flowID) && Boolean(state.csrf)}
+                        submit={Boolean(state.flowID) && Boolean(state.csrf) && Boolean(state.accountKey)} />
+                    <FlowData data={formatFlowData()} />
                 </Col>
                 <Col md={{ span: 8 }}>
-                    <DisplayRequest title="Request" text={request}></DisplayRequest>
-                    <DisplayRequest title="Reponse" text={response}></DisplayRequest>
+                    <DisplayRequest title="Request" text={state.request} />
+                    <DisplayRequest title="Reponse" text={state.response} />
                 </Col>
             </Row>
         </Container>

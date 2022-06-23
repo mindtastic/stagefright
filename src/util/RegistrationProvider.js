@@ -7,8 +7,8 @@ class RegistrationProvider {
     }
 
     initRequest = {
-        url: getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.regInit),
-        proxyUrl: getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.regInit),
+        url: API.baseUrl + API.endpoints.regInit,
+        proxyUrl: API.proxyUrl + API.endpoints.regInit,
         method: "GET",
         headers: {
             Accept: "application/json"
@@ -29,8 +29,8 @@ class RegistrationProvider {
     }
 
     getInitRequest() {
-        this.initRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.regInit);
-        this.initRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.regInit);
+        this.initRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, "regInit");
+        this.initRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, "regInit");
 
         return this.initRequest;
     }
@@ -40,8 +40,8 @@ class RegistrationProvider {
             this.submitRequest.body.csrf_token = csrf;
         }
 
-        this.submitRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, API.endpoints.regSubmit);
-        this.submitRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, API.endpoints.regSubmit);
+        this.submitRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, "regSubmit");
+        this.submitRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, "regSubmit");
 
         return this.submitRequest;
     }

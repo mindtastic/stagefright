@@ -27,16 +27,11 @@ export default function () {
         let login = new LoginProvider(cluster, flow);
         var jsonRes = await API.makeRequest(login.getSessionRequest());
 
-        if (jsonRes.status == 401) {
-            setSessionActive(false);
-        } else {
-            setSessionActive(true);
-        }
+        const isSessionActive = !(jsonRes.status == 401);
+        setSessionActive(isSessionActive);
     }
 
-    useEffect(() => {
-        checkSession();
-    }, []);
+    useEffect(checkSession, [cluster, flow]);
 
     return (
         <Router>
@@ -47,12 +42,12 @@ export default function () {
                     clusterState={cluster}
                     clusterHandler={clusterChange}
                     session={sessionActive}
-                    sessionHandler={checkSession}></SettingsHeader>
+                    checkForActiveSessionCallback={checkSession}></SettingsHeader>
                 <Routes>
-                    <Route exact path="/" element={<Hub sessionHandler={checkSession} session={sessionActive} />}></Route>
-                    <Route exact path="/registration" element={<RegPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
-                    <Route exact path="/login" element={<LoginPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
-                    <Route exact path="/logout" element={<LogoutPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
+                    <Route exact path="/" element={<Hub checkForActiveSessionCallback={checkSession} activeSession={sessionActive} />}></Route>
+                    <Route exact path="/registration" element={<RegPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />}></Route>
+                    <Route exact path="/login" element={<LoginPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />}></Route>
+                    <Route exact path="/logout" element={<LogoutPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />}></Route>
                 </Routes>
             </div>
         </Router>
