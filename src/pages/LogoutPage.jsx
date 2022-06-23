@@ -46,6 +46,8 @@ const LogoutPage = (props) => {
 
         var jsonRes = await API.makeRequestNoJSON(newRequest);
         setResponse(jsonRes);
+
+        props.sessionHandler();
     }
 
     const formatFlowData = () => {

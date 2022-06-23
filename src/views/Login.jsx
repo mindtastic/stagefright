@@ -20,7 +20,7 @@ const Login = (props) => {
             <div style={divider} className="my-4"></div>
             <Form>
                 <Form.Group>
-                    <Form.Control type="text" placeholder="AccountKey" value={props.accountKey} onChange={(event) => props.accountKeyHandler(event)} disabled={!props.submit}></Form.Control>
+                    <Form.Control type="text" placeholder="AccountKey" value={props.accountKey} onChange={(event) => props.accountKeyHandler(event)} disabled={!props.form}></Form.Control>
                 </Form.Group>
             </Form>
             <Button className="mt-2" onClick={() => props.submitHandler()} disabled={!props.submit}>

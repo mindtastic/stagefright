@@ -17,7 +17,7 @@ const DisplayRequest = (props) => {
                 {(Object.keys(props.text)).map((key, index) => {
                     if (key != "proxyUrl") {
                         return (
-                            <div>
+                            <div key={index}>
                                 <span style={{ fontWeight: "700" }}>{key}: </span>
                                 <pre>
                                     {(typeof props.text[key] === "object" ? JSON.stringify(props.text[key], null, 4) : props.text[key])}

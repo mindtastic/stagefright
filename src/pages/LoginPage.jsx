@@ -55,6 +55,8 @@ const LoginPage = (props) => {
         var jsonRes = await API.makeRequest(login.stringifyBody(newRequest));
         setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
         setSessionID(jsonRes.json.session.id);
+
+        props.sessionHandler();
     }
 
     const changeAccountKey = (event) => {
@@ -82,7 +84,13 @@ const LoginPage = (props) => {
         <Container>
             <Row>
                 <Col md={{ span: 4 }}>
-                    <Login initHandler={initLogin} submitHandler={submitLogin} accountKey={accountKey} accountKeyHandler={changeAccountKey} submit={Boolean(flowID) && Boolean(csrf)}></Login>
+                    <Login
+                        initHandler={initLogin}
+                        submitHandler={submitLogin}
+                        accountKey={accountKey}
+                        accountKeyHandler={changeAccountKey}
+                        form={Boolean(flowID) && Boolean(csrf)}
+                        submit={Boolean(flowID) && Boolean(csrf) && Boolean(accountKey)}></Login>
                     <FlowData data={formatFlowData()}></FlowData>
                 </Col>
                 <Col md={{ span: 8 }}>

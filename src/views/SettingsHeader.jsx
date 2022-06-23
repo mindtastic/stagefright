@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Navbar, Form } from "react-bootstrap";
+import { Container, Navbar, Form, Alert } from "react-bootstrap";
 
 const SettingsHeader = (props) => {
     return (
@@ -7,6 +7,7 @@ const SettingsHeader = (props) => {
             <Container>
                 <Navbar.Brand>Mindtastic</Navbar.Brand>
                 <Navbar.Collapse className="justify-content-end">
+                    <Alert className="my-0 me-4" variant={props.session ? "danger" : "success"}>{props.session ? "Active session" : "No active session"}</Alert>
                     <Form className="d-flex">
                         <Form.Group className="me-2">
                             <Form.Label>

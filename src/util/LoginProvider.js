@@ -29,6 +29,16 @@ class LoginProvider {
         }
     }
 
+    checkSessionRequest = {
+        url: getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.whoami),
+        proxyUrl: getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.whoami),
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        }
+    }
+
     getInitRequest() {
         this.initRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.loginInit);
         this.initRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.loginInit);
@@ -48,6 +58,13 @@ class LoginProvider {
         this.submitRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOWID%": flowID }, API.endpoints.loginSubmit);
 
         return this.submitRequest;
+    }
+
+    getSessionRequest() {
+        this.checkSessionRequest.url = getFormattedURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.whoami);
+        this.checkSessionRequest.proxyUrl = getFormattedProxyURL({ "%CLUSTER%": this.cluster, "%FLOW%": this.flowType }, API.endpoints.whoami);
+
+        return this.checkSessionRequest;
     }
 
     stringifyBody(request) {

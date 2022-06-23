@@ -6,7 +6,8 @@ const endpoints = {
     loginInit: "/self-service/login/%FLOW%",
     loginSubmit: "/self-service/login?flow=%FLOWID%",
     logoutInit: "/self-service/logout/%FLOW%",
-    logoutSubmit: "/self-service/logout?token=%LOGOUTTOKEN%"
+    logoutSubmit: "/self-service/logout?token=%LOGOUTTOKEN%",
+    whoami: "/sessions/whoami"
 }
 
 export default {
@@ -109,6 +110,8 @@ function getFormattedURL(replacements, endpoint) {
             return formatURL(baseUrl + endpoints.logoutInit, replacements);
         case endpoints.logoutSubmit:
             return formatURL(baseUrl + endpoints.logoutSubmit, replacements);
+        case endpoints.whoami:
+            return formatURL(baseUrl + endpoints.whoami, replacements);
         default:
             return "";
     }
@@ -128,6 +131,8 @@ function getFormattedProxyURL(replacements, endpoint) {
             return formatURL(proxyUrl + endpoints.logoutInit, replacements);
         case endpoints.logoutSubmit:
             return formatURL(proxyUrl + endpoints.logoutSubmit, replacements);
+        case endpoints.whoami:
+            return formatURL(proxyUrl + endpoints.whoami, replacements);
         default:
             return "";
     }

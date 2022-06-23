@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import API from "./API";
 import Echo from "./Echo";
 import Registration from "./Registration";
@@ -9,10 +9,12 @@ import LogoutPage from "./pages/LogoutPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SettingsHeader from "./views/SettingsHeader";
+import LoginProvider from "./util/LoginProvider";
 
 export default function () {
     const [cluster, setCluster] = useState("live");
     const [flow, setFlow] = useState("browser");
+    const [sessionActive, setSessionActive] = useState(false);
 
     const clusterChange = (event) => {
         setCluster(event.target.value);
@@ -22,15 +24,36 @@ export default function () {
         setFlow(event.target.value);
     }
 
+    const checkSession = async () => {
+        let login = new LoginProvider(cluster, flow);
+        var jsonRes = await API.makeRequest(login.getSessionRequest());
+
+        if (jsonRes.status == 401) {
+            setSessionActive(false);
+        } else {
+            setSessionActive(true);
+        }
+    }
+
+    useEffect(() => {
+        checkSession();
+    }, []);
+
     return (
         <Router>
             <div>
-                <SettingsHeader flowState={flow} flowHandler={flowChange} clusterState={cluster} clusterHandler={clusterChange}></SettingsHeader>
+                <SettingsHeader
+                    flowState={flow}
+                    flowHandler={flowChange}
+                    clusterState={cluster}
+                    clusterHandler={clusterChange}
+                    session={sessionActive}
+                    sessionHandler={checkSession}></SettingsHeader>
                 <Routes>
-                    <Route exact path="/" element={<Hub />}></Route>
-                    <Route exact path="/registration" element={<RegPage flow={flow} cluster={cluster} />}></Route>
-                    <Route exact path="/login" element={<LoginPage flow={flow} cluster={cluster} />}></Route>
-                    <Route exact path="/logout" element={<LogoutPage flow={flow} cluster={cluster} />}></Route>
+                    <Route exact path="/" element={<Hub sessionHandler={checkSession} />}></Route>
+                    <Route exact path="/registration" element={<RegPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
+                    <Route exact path="/login" element={<LoginPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
+                    <Route exact path="/logout" element={<LogoutPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
                 </Routes>
             </div>
         </Router>

@@ -57,6 +57,8 @@ const RegPage = (props) => {
         setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
         setAccountKey(jsonRes.json.identity.traits.accountKey);
         setSessionID(jsonRes.json.session.id);
+
+        props.sessionHandler();
     }
 
     const formatFlowData = () => {
