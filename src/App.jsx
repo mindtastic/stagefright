@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import LogoutPage from "./pages/LogoutPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/App.css';
 import SettingsHeader from "./views/SettingsHeader";
 import LoginProvider from "./util/LoginProvider";
 
@@ -50,7 +51,7 @@ export default function () {
                     session={sessionActive}
                     sessionHandler={checkSession}></SettingsHeader>
                 <Routes>
-                    <Route exact path="/" element={<Hub sessionHandler={checkSession} />}></Route>
+                    <Route exact path="/" element={<Hub sessionHandler={checkSession} session={sessionActive} />}></Route>
                     <Route exact path="/registration" element={<RegPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
                     <Route exact path="/login" element={<LoginPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
                     <Route exact path="/logout" element={<LogoutPage flow={flow} cluster={cluster} sessionHandler={checkSession} />}></Route>
