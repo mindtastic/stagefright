@@ -29,7 +29,7 @@ const Hub = (props) => {
         <Container fluid="lg">
             <Row>
                 <Col md={{ span: 6, offset: 3 }} className="d-flex align-items-center flex-column">
-                    <h1 className="my-4">Mindtastic Auth API Tester</h1>
+                    <h1 className="my-4">Mindtastic Stagefright&trade;</h1>
                     {modes.map((item, index) =>
                         <Link to={item.path} className={"my-4 " + ((item.requiresSession ? !props.session : props.session) ? "disabled-link" : "")} style={{ width: "80%" }} key={index}>
                             <Button style={{ width: "100%" }} disabled={item.requiresSession ? !props.session : props.session}>

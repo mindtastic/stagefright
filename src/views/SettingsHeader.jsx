@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { Container, Navbar, Form, Alert } from "react-bootstrap";
+import { Container, Navbar, Form, Alert, Badge } from "react-bootstrap";
 
 const SettingsHeader = (props) => {
+
     return (
         <Navbar bg="light">
             <Container>
-                <Navbar.Brand>Mindtastic</Navbar.Brand>
+                <Navbar.Brand>Mindtastic <Badge className="logo-badge">Stagefright 2.0</Badge></Navbar.Brand>
                 <Navbar.Collapse className="justify-content-end">
-                    <Alert className="my-0 me-4" variant={props.session ? "danger" : "success"}>{props.session ? "Active session" : "No active session"}</Alert>
                     <Form className="d-flex">
+                        <Alert className="my-0 me-4" variant={props.session ? "danger" : "success"}>{props.session ? "Active session" : "No active session"}</Alert>
                         <Form.Group className="me-2">
-                            <Form.Label>
+                            <Form.Label className="mb-0">
                                 Cluster
                             </Form.Label>
                             <Form.Select value={props.clusterState} onChange={(event) => props.clusterHandler(event)}>
@@ -20,7 +21,7 @@ const SettingsHeader = (props) => {
                             </Form.Select>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>
+                            <Form.Label className="mb-0">
                                 Flow
                             </Form.Label>
                             <Form.Select value={props.flowState} onChange={(event) => props.flowHandler(event)}>
