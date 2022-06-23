@@ -10,6 +10,7 @@ import './styles/App.css';
 import SettingsHeader from "./views/SettingsHeader";
 import LoginProvider from "./util/LoginProvider";
 
+
 export default function () {
     const [cluster, setCluster] = useState("live");
     const [flow, setFlow] = useState("browser");
@@ -42,7 +43,7 @@ export default function () {
                     clusterState={cluster}
                     clusterHandler={clusterChange}
                     session={sessionActive}
-                    checkForActiveSessionCallback={checkSession}></SettingsHeader>
+                    checkForActiveSessionCallback={checkSession} />
                 <Routes>
                     <Route exact path="/" element={<Hub checkForActiveSessionCallback={checkSession} activeSession={sessionActive} />}></Route>
                     <Route exact path="/registration" element={<RegPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />}></Route>

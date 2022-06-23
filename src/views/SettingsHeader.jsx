@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { Container, Navbar, Form, Alert, Badge } from "react-bootstrap";
+import { Container, Navbar, Form, Alert, Badge, Button, Image } from "react-bootstrap";
+import backButton from "../img/arrow-left.svg";
+import { useLocation, Link } from "react-router-dom";
 
 const SettingsHeader = (props) => {
+    const location = useLocation();
 
     return (
         <Navbar bg="light">
             <Container>
+                <Link to="/" className={location.pathname == "/" ? "d-none" : ""}>
+                    <Button variant="light"><Image src={backButton}></Image></Button>
+                </Link>
                 <Navbar.Brand>Mindtastic <Badge className="logo-badge">Stagefright 2.0</Badge></Navbar.Brand>
                 <Navbar.Collapse className="justify-content-end">
                     <Form className="d-flex">
