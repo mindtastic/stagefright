@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import DisplayRequest from "../views/DisplayRequest";
 import FlowData from "../views/FlowData";
 import API from "../API";
-import RegistrationProvider from "../util/RegistrationProvider";
 import { Container, Row, Col } from "react-bootstrap";
 import Registration from "../views/Registration";
+import { malformedResponse } from "../util/errors";
+import { stringifyBody } from "../util/stringifyBody";
 
-const RegPage = (props) => {
+const RegPage = ({ requestProvider, sessionChangeCallback }) => {
     const initialState = {
         flowID: "",
         csrf: "",
@@ -15,86 +16,78 @@ const RegPage = (props) => {
         request: {},
         response: {},
     };
-
+    
     const [state, setState] = useState(initialState);
     const updateState = (changes) => setState({ ...state, ...changes });
-
+    
     const reset = () => updateState(initialState);
     const resetPrint = () => updateState({ request: {}, response: {} });
-
-    const registration = new RegistrationProvider(props.cluster, props.flow);
-
+    
     const initRegistration = async () => {
         reset();
-
-        let request = registration.getInitRequest();
-
+        
+        const request = requestProvider.initRegistration();
         updateState({ request });
-
-        let response = await API.makeRequest(request);
-        let flowID = "";
-        let csrf = "";
-
+        
+        const response = await API.makeRequest(request);
         try {
-            flowID = response.json.id;
-            csrf = response.json.ui.nodes.filter(x => x.attributes.name == "csrf_token").map(x => x.attributes.value)[0];
-        } catch (err) {
-            console.log(err);
+            const flowID = response.json.id;
+            const csrf = response.json.ui.nodes
+            .filter(x => x.attributes.name == "csrf_token")
+            .map(x => x.attributes.value)[0];
+            
+            updateState({ request, response, flowID, csrf });
+        } catch (e) {
+            updateState({ request, response: { error: malformedResponse(e), response } });
         }
-
-        updateState({ request, response, flowID, csrf });
     }
-
+    
     const submitRegistration = async () => {
         resetPrint();
-
-        let request = registration.getSubmitRequest(state.flowID, state.csrf);
-
+        
+        const request = requestProvider.submitRegistration(state.flowID, state.csrf);
         updateState({ request });
-
-        let response = await API.makeRequest(registration.stringifyBody(request));
-        let accountKey = "";
-        let sessionID = "";
-
+        
+        const response = await API.makeRequest(stringifyBody(request));
         try {
-            accountKey = response.json.identity.traits.accountKey;
-            sessionID = response.json.session.id
-        } catch (err) {
-            console.log(err);
+            updateState({
+                request,
+                response,
+                accountKey: response.json.identity.traits.accountKey,
+                sessionID: response.json.session.id,
+            });
+        } catch (e) {
+            updateState({ request, response: { error: malformedResponse(e), response } });
         }
-
-        updateState({ request, response, accountKey, sessionID });
-
-        props.checkForActiveSessionCallback();
+        
+        sessionChangeCallback();
     }
-
-    const formatFlowData = () => {
-        return [
-            {
-                name: "Flow ID",
-                value: state.flowID
-            },
-            {
-                name: "CSRF Token",
-                value: state.csrf
-            },
-            {
-                name: "AccountKey",
-                value: state.accountKey
-            },
-            {
-                name: "Session ID",
-                value: state.sessionID
-            }
-        ]
-    }
-
+    
+    const formatFlowData = [
+        {
+            name: "Flow ID",
+            value: state.flowID
+        },
+        {
+            name: "CSRF Token",
+            value: state.csrf
+        },
+        {
+            name: "AccountKey",
+            value: state.accountKey
+        },
+        {
+            name: "Session ID",
+            value: state.sessionID
+        }
+    ];
+    
     return (
         <Container>
             <Row>
                 <Col md={{ span: 4 }}>
-                    <Registration submit={Boolean(state.flowID) && Boolean(state.csrf)} initHandler={() => initRegistration()} submitHandler={() => submitRegistration()} />
-                    <FlowData data={formatFlowData()} />
+                    <Registration submit={Boolean(state.flowID) && Boolean(state.csrf)} initHandler={initRegistration} submitHandler={submitRegistration} />
+                <FlowData data={formatFlowData()} />
                 </Col>
                 <Col md={{ span: 8 }}>
                     <DisplayRequest title="Request" text={state.request} />
@@ -102,7 +95,7 @@ const RegPage = (props) => {
                 </Col>
             </Row>
         </Container>
-    );
-}
-
-export default RegPage;
+        );
+    }
+    
+    export default RegPage;

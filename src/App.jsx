@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/App.css';
 import SettingsHeader from "./views/SettingsHeader";
-import LoginProvider from "./util/LoginProvider";
+import requestProvider from './util/requestProvider';
 
 
 export default function () {
@@ -16,18 +16,13 @@ export default function () {
     const [flow, setFlow] = useState("browser");
     const [sessionActive, setSessionActive] = useState(false);
 
-    const clusterChange = (event) => {
-        setCluster(event.target.value);
-    }
+    const clusterChange = (event) => setCluster(event.target.value);
+    const flowChange = (event) => setFlow(event.target.value);
 
-    const flowChange = (event) => {
-        setFlow(event.target.value);
-    }
+    const requests = requestProvider(cluster, flow);
 
     const checkSession = async () => {
-        let login = new LoginProvider(cluster, flow);
-        var jsonRes = await API.makeRequest(login.getSessionRequest());
-
+        const jsonRes = await API.makeRequest(requests.session());
         const isSessionActive = !(jsonRes.status == 401);
         setSessionActive(isSessionActive);
     }
@@ -43,12 +38,12 @@ export default function () {
                     clusterState={cluster}
                     clusterHandler={clusterChange}
                     session={sessionActive}
-                    checkForActiveSessionCallback={checkSession} />
+                />
                 <Routes>
-                    <Route exact path="/" element={<Hub checkForActiveSessionCallback={checkSession} activeSession={sessionActive} />}></Route>
-                    <Route exact path="/registration" element={<RegPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />}></Route>
-                    <Route exact path="/login" element={<LoginPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />}></Route>
-                    <Route exact path="/logout" element={<LogoutPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />}></Route>
+                    <Route exact path="/" element={<Hub activeSession={sessionActive} />} />
+                    <Route exact path="/registration" element={<RegPage requestProvider={requests} sessionChangeCallback={checkSession} />} />
+                    <Route exact path="/login" element={<LoginPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />} />
+                    <Route exact path="/logout" element={<LogoutPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />} />
                 </Routes>
             </div>
         </Router>
