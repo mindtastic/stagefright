@@ -42,7 +42,7 @@ export default function () {
                 <Routes>
                     <Route exact path="/" element={<Hub activeSession={sessionActive} />} />
                     <Route exact path="/registration" element={<RegPage requestProvider={requests} sessionChangeCallback={checkSession} />} />
-                    <Route exact path="/login" element={<LoginPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />} />
+                    <Route exact path="/login" element={<LoginPage requestProvider={requests} sessionChangeCallback={checkSession} />} />
                     <Route exact path="/logout" element={<LogoutPage flow={flow} cluster={cluster} checkForActiveSessionCallback={checkSession} />} />
                 </Routes>
             </div>

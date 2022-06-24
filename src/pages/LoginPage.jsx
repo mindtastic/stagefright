@@ -1,113 +1,29 @@
-import React, { useState } from "react";
-import DisplayRequest from "../views/DisplayRequest";
-import FlowData from "../views/FlowData";
-import API from "../API";
-import LoginProvider from "../util/LoginProvider";
-import { Container, Row, Col } from "react-bootstrap";
+import React from "react";
 import Login from "../views/Login";
-import LogoutProvider from "../util/LogoutProvider";
+import { withApiPage } from "./ApiPage";
 
-const LoginPage = (props) => {
-    const initialState = {
-        flowID: "",
-        csrf: "",
-        accountKey: "",
-        sessionID: "",
-        request: {},
-        response: {},
-    };
+const loginPage = (props) => (
+    <Login
+        initHandler={props.initHandler}
+        submitHandler={props.submitHandler}
+        accountKey={props.accountKey}
+        accountKeyHandler={(ev) => props.setAccountKey(ev.target.value)}
+        form={Boolean(props.flowID) && Boolean(props.csrf)}
+        submit={Boolean(props.flowID) && Boolean(props.csrf) && Boolean(props.accountKey)}
+    />
+);
 
-    const [state, setState] = useState(initialState);
-    const updateState = (changes) => setState({ ...state, ...changes });
-
-    const reset = () => updateState(initialState);
-    const resetPrint = () => updateState({ request: {}, response: {} });
-
-    const login = new LoginProvider(props.cluster, props.flow);
-
-    const initLogin = async () => {
-        reset();
-
-        let request = login.getInitRequest();
-
-        updateState({ request });
-
-        let response = await API.makeRequest(request);
-        let flowID = "";
-        let csrf = "";
-
-        try {
-            flowID = response.json.id;
-            csrf = response.json.ui.nodes.filter(x => x.attributes.name == "csrf_token").map(x => x.attributes.value)[0];
-        } catch (err) {
-            console.log(err);
-        }
-
-        updateState({ request, response, flowID, csrf });
+export default ({requestProvider, sessionChangeCallback}) => {
+    const apiPageConfig = {
+        flowDataKeys: ['flowID', 'csrf', 'sessionID'],
+        initializer: { fn: requestProvider.initLogin },
+        submitter: {
+            fn: requestProvider.submitLogin,
+            args: ['flowID', 'accountKey', 'csrf'],
+        },
+        subscribes: ['flowID', 'csrf', 'accountKey'],
+        submitCallback: sessionChangeCallback,
     }
 
-    const submitLogin = async () => {
-        resetPrint();
-
-        let request = login.getSubmitRequest(state.flowID, state.accountKey, state.csrf);
-
-        updateState({ request });
-
-        let response = await API.makeRequest(login.stringifyBody(request));
-        let sessionID = "";
-
-        try {
-            sessionID = response.json.session.id;
-        } catch (err) {
-            console.log(err);
-        }
-
-        updateState({ request, response, sessionID });
-
-        props.checkForActiveSessionCallback();
-    }
-
-    const changeAccountKey = (event) => {
-        updateState({ accountKey: event.target.value });
-    }
-
-    const formatFlowData = () => {
-        return [
-            {
-                name: "Flow ID",
-                value: state.flowID
-            },
-            {
-                name: "CSRF Token",
-                value: state.csrf
-            },
-            {
-                name: "Session ID",
-                value: state.sessionID
-            }
-        ]
-    }
-
-    return (
-        <Container>
-            <Row>
-                <Col md={{ span: 4 }}>
-                    <Login
-                        initHandler={initLogin}
-                        submitHandler={submitLogin}
-                        accountKey={state.accountKey}
-                        accountKeyHandler={changeAccountKey}
-                        form={Boolean(state.flowID) && Boolean(state.csrf)}
-                        submit={Boolean(state.flowID) && Boolean(state.csrf) && Boolean(state.accountKey)} />
-                    <FlowData data={formatFlowData()} />
-                </Col>
-                <Col md={{ span: 8 }}>
-                    <DisplayRequest title="Request" text={state.request} />
-                    <DisplayRequest title="Reponse" text={state.response} />
-                </Col>
-            </Row>
-        </Container>
-    );
-}
-
-export default LoginPage;
+    return withApiPage(apiPageConfig)(loginPage)();
+};
