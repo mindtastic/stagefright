@@ -4,7 +4,7 @@ import FlowData from "../views/FlowData";
 import DisplayRequest from "../views/DisplayRequest";
 
 import API from "../API";
-import { capitalize, executeIfExists, isFunction, splitOnCapitals } from "../util/helpers";
+import { capitalize, executeIfExists, hasKey, isFunction, splitOnCapitals } from "../util/helpers";
 import { malformedResponse } from "../util/errors";
 import stringifyBody from "../util/stringifyBody";
 
@@ -69,7 +69,7 @@ export const withApiPage = ({ flowDataKeys, initializer, submitter, submitCallba
     const subscribedState = subscribes.reduce(
         (acc, stateVar) => ({ 
             ...acc,
-            [`${stateVar}`]: state[stateVar] || null,
+            [`${stateVar}`]: hasKey(state, stateVar) ? state[stateVar] : null,
             [`set${capitalize(stateVar)}`]: (newVal) => updateState({ [`${stateVar}`]: newVal }),
         }), {});
 

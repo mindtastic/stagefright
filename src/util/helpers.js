@@ -9,3 +9,4 @@ export const executeIfExists = (func) => { if (isFunction(func)) { func(); } };
 /** Object helpers */
 export const isObject = (obj) => (obj != null && (typeof obj === 'object' || typeof obj === 'function'));
 export const applyIfExists = (obj, func) => ((isObject(obj)) ? func(obj) : obj);
+export const hasKey = (obj, key) => obj.hasOwnProperty(key);
