@@ -1,6 +1,6 @@
 import React from "react";
 import Registration from "../views/Registration";
-import { withApiPage } from "./ApiPage";
+import { defaultSubmitReducer, withApiPage } from "./ApiPage";
 
 const registrationPage = (props) => (
     <Registration 
@@ -17,6 +17,14 @@ export default ({requestProvider, sessionChangeCallback}) => {
         submitter: {
             fn: requestProvider.submitRegistration,
             args: ['flowID', 'csrf'],
+            reducer: ({request, response}) => {
+                try {
+                    const accountKey = response.json.identity.traits.accountKey;
+                    return { ...defaultSubmitReducer({ request, response}), accountKey };
+                } catch (e) {
+                    return { request, response: { error: malformedResponse(e), response }};
+                }
+            },
         },
         subscribes: ['flowID', 'csrf'],
         submitCallback: sessionChangeCallback,
