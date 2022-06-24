@@ -1,78 +1,32 @@
-import React, { useState } from "react";
-import DisplayRequest from "../views/DisplayRequest";
-import FlowData from "../views/FlowData";
-import API from "../API";
-import LogoutProvider from "../util/LogoutProvider";
-import { Container, Row, Col } from "react-bootstrap";
+import React from "react";
+import { malformedResponse } from "../util/errors";
 import Logout from "../views/Logout";
+import { withApiPage } from "./ApiPage";
 
-const LogoutPage = (props) => {
-    const reset = () => {
-        setRequest({});
-        setResponse({});
-        setLogoutToken("");
-    }
+const logoutPage = ({ initHandler, submitHandler, logoutToken }) =>
+    <Logout initHandler={initHandler} submitHandler={submitHandler} submit={Boolean(logoutToken)} />;
 
-    const resetPrint = () => {
-        setRequest({});
-        setResponse({});
-    }
+export default ({requestProvider, sessionChangeCallback}) => {
+    const apiPageConfig = {
+        flowDataKeys: ['logoutToken'],
+        initializer: {
+            fn: requestProvider.initLogout,
+            reducer: ({ request, response }) => {
+                try { 
+                    const logoutToken = response.json.logout_token;
+                    return { request, response, logoutToken };
+                } catch (e) {
+                    return { request, response: { error: malformedResponse(e), response }};
+                }
+            },
+        },
+        submitter: {
+            fn: requestProvider.submitLogout,
+            args: ['logoutToken'],
+        },
+        subscribes: ['logoutToken'],
+        submitCallback: sessionChangeCallback,
+    };
 
-    const [request, setRequest] = useState({});
-    const [response, setResponse] = useState({});
-
-    const [logoutToken, setLogoutToken] = useState("");
-
-    const initLogout = async () => {
-        reset();
-
-        let logout = new LogoutProvider(props.cluster, props.flow);
-        let newRequest = logout.getInitRequest();
-
-        setRequest(newRequest);
-
-        var jsonRes = await API.makeRequest(newRequest);
-        setResponse({ ...response, headers: jsonRes.headers, status: jsonRes.status, body: jsonRes.json });
-        setLogoutToken(jsonRes.json.logout_token);
-    }
-
-    const submitLogout = async () => {
-        resetPrint();
-
-        let logout = new LogoutProvider(props.cluster, props.flow);
-        let newRequest = logout.getSubmitRequest(logoutToken);
-
-        setRequest(newRequest);
-
-        var jsonRes = await API.makeRequestNoJSON(newRequest);
-        setResponse(jsonRes);
-
-        props.checkForActiveSessionCallback();
-    }
-
-    const formatFlowData = () => {
-        return [
-            {
-                name: "Logout Token",
-                value: logoutToken
-            }
-        ]
-    }
-
-    return (
-        <Container>
-            <Row>
-                <Col md={{ span: 4 }}>
-                    <Logout initHandler={initLogout} submitHandler={submitLogout} submit={Boolean(logoutToken)}></Logout>
-                    <FlowData data={formatFlowData()}></FlowData>
-                </Col>
-                <Col md={{ span: 8 }}>
-                    <DisplayRequest title="Request" text={request}></DisplayRequest>
-                    <DisplayRequest title="Reponse" text={response}></DisplayRequest>
-                </Col>
-            </Row>
-        </Container>
-    );
-}
-
-export default LogoutPage;
+    return withApiPage(apiPageConfig)(logoutPage)();
+};
