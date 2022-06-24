@@ -23,7 +23,7 @@ export default function () {
 
     const checkSession = async () => {
         const jsonRes = await API.makeRequest(requests.session());
-        const isSessionActive = !(jsonRes.status == 401);
+        const isSessionActive = !(jsonRes.status === 401);
         setSessionActive(isSessionActive);
     }
 
