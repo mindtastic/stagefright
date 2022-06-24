@@ -42,7 +42,7 @@ const requestProvider = (cluster, flowType) => {
         }),
         submitLogin: (flowID, accountKey, csrf = '') => ({
             ...submit("loginSubmit", flowID),
-            body: { identifier: accountKey, password: md5(accountKey), csrf_token: csrf },
+            body: { method: 'password', identifier: accountKey, password: md5(accountKey), csrf_token: csrf },
         }),
         submitLogout: (logoutToken) => ({
             ...submitReq,
