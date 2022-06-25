@@ -25,10 +25,7 @@ export default {
         } catch (err) {
             console.log(err);
         }
-
-        console.log(response);
-        console.log(json);
-
+        
         return {
             headers: response.headers,
             status: response.status,
